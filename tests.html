@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>thaw - Test Suite</title>
+  <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+  <div class="wrap">
+    <header class="masthead">
+      <div class="brand-row">
+        <svg class="mark" viewBox="0 0 48 48" fill="none" aria-hidden="true">
+          <defs>
+            <linearGradient id="g" x1="0" y1="0" x2="48" y2="48" gradientUnits="userSpaceOnUse">
+              <stop stop-color="#8fd7ff"/><stop offset="1" stop-color="#f7931a"/>
+            </linearGradient>
+          </defs>
+          <g stroke="url(#g)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M24 4v40M6.7 14 41.3 34M6.7 34 41.3 14"/>
+            <path d="M24 12l4 4M24 12l-4 4M24 36l4-4M24 36l-4-4"/>
+            <path d="m11 18 .8 5.5-5 2.5M37 30l-.8-5.5 5-2.5M11 30l.8-5.5-5-2.5M37 18l-.8 5.5 5 2.5"/>
+          </g>
+        </svg>
+        <div class="wordmark"><b>thaw</b><span>test suite</span></div>
+        <span class="spacer"></span>
+        <span class="unofficial-badge">Unofficial · community tool</span>
+      </div>
+      <div class="hero">
+        <h1 style="font-size:clamp(1.5rem,3.6vw,2.2rem)">Don't trust - <span class="thaw">verify</span>.</h1>
+        <p class="lede">
+          The same 32 tests as the Python tool, run right here against the test
+          vectors from the Rust reference implementation. A golden-vector test
+          pins the exact xpriv and descriptor - if everything passes, this copy
+          derives the same wallet.
+        </p>
+      </div>
+    </header>
+
+    <div id="summary" class="test-summary">Running…</div>
+    <div id="output"></div>
+
+    <footer>
+      <a class="verify-link" href="index.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+        Back to recovery tool
+      </a>
+    </footer>
+  </div>
+
+  <script src="js/vendor/bip39-wordlist.js"></script>
+  <script src="js/vendor/noble-secp256k1.js"></script>
+  <script src="js/vendor/sha256.js"></script>
+  <script src="js/frost.js"></script>
+  <script src="js/tests.js"></script>
+  <script>
+    (function () {
+      var CHECK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>';
+      var CROSS = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg>';
+
+      var r = window.runFrostTests();
+      var summary = document.getElementById("summary");
+      var output = document.getElementById("output");
+
+      summary.className = "test-summary " + (r.failed === 0 ? "pass" : "fail");
+      summary.innerHTML =
+        (r.failed === 0 ? CHECK : CROSS) +
+        "<span></span>";
+      summary.querySelector("span").textContent =
+        r.failed === 0
+          ? "All " + r.total + " tests passed"
+          : r.failed + " of " + r.total + " tests failed";
+
+      var currentGroup = null;
+      var groupEl = null;
+      r.results.forEach(function (t) {
+        if (t.group !== currentGroup) {
+          currentGroup = t.group;
+          groupEl = document.createElement("div");
+          groupEl.className = "test-group";
+          var title = document.createElement("div");
+          title.className = "test-group-title";
+          title.textContent = t.group;
+          groupEl.appendChild(title);
+          output.appendChild(groupEl);
+        }
+        var row = document.createElement("div");
+        row.className = "test-row " + (t.ok ? "ok" : "fail");
+        row.innerHTML =
+          '<span class="mark">' + (t.ok ? CHECK : CROSS) + "</span>" +
+          '<span class="name"></span>' +
+          (t.ok ? "" : '<span class="err"></span>');
+        row.querySelector(".name").textContent = t.name;
+        if (!t.ok) row.querySelector(".err").textContent = t.error;
+        groupEl.appendChild(row);
+      });
+    })();
+  </script>
+</body>
+</html>
