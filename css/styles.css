@@ -200,6 +200,30 @@ code {
 .notice b { color: var(--text); font-weight: 700; }
 
 /* ==========================================================================
+   no-javascript banner  (rendered only inside <noscript>)
+   ========================================================================== */
+.nojs-banner {
+  background: var(--amber);
+  color: #1a1206;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.35);
+  box-shadow: var(--shadow-sm);
+  position: relative;
+  z-index: 2;
+}
+.nojs-inner {
+  max-width: var(--maxw);
+  margin: 0 auto;
+  padding: 14px clamp(16px, 4vw, 28px);
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 14px;
+  align-items: center;
+}
+.nojs-inner svg { width: 26px; height: 26px; }
+.nojs-inner p { margin: 0; font-size: 0.95rem; line-height: 1.5; }
+.nojs-inner b { display: block; font-size: 1.05rem; font-weight: 800; }
+
+/* ==========================================================================
    security banner
    ========================================================================== */
 .shield {
